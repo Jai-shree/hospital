@@ -18,18 +18,7 @@ export class ListService {
         //throw new NotFoundException('Students data not found!');
         console.log('Student data not found');
     }
+    console.log(data)
     return data;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} list`;
-  }
-
-  update(id: number, updateListDto: UpdateListDto) {
-    return `This action updates a #${id} list`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} list`;
   }
 }
