@@ -17,18 +17,4 @@ export class ListController {
     return this.listService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.listService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateListDto: UpdateListDto) {
-    return this.listService.update(+id, updateListDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.listService.remove(+id);
-  }
 }
