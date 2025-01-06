@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
 
 @Schema({collection:"login"})
 export class Login{
+    
     @Prop()
     username:String;
 

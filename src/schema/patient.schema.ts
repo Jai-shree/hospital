@@ -4,13 +4,13 @@ import { Date } from "mongoose";
 @Schema()
 export class Patient{
     @Prop()
-    Firstname:String;
+    firstName:string;
 
     @Prop()
-    Lastname:String;
+    lastName:string;
 
     @Prop()
-    UHID:String;
+    UHID:string;
 
     @Prop()
     age:number;

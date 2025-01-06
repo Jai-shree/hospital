@@ -4,19 +4,19 @@ import { Date } from "mongoose";
 
 export class UserResponseDto{
     @IsString()
-    id : string
+    _id : Object
 
     @IsString()
     @Expose()
-    firstname:string;
+    firstName:string;
 
     @IsString()
     @Expose()
-    lastname:string;
+    lastName:string;
 
     @IsNumber()
     @Expose()
-    UHID: number;
+    UHID: string;
 
     @IsNumber()
     @Expose()

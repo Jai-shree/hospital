@@ -32,3 +32,9 @@ export class LoginResponseDto{
         Object.assign(this, partial);
       }
 }
+
+export class ResetPasswordDto{
+    @IsString()
+    @IsNotEmpty()
+    password : string;
+}

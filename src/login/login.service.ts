@@ -1,5 +1,5 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CreateLoginDto , LoginResponseDto } from './dto/login.dto';
+import { Injectable, UnauthorizedException,NotFoundException } from '@nestjs/common';
+import { CreateLoginDto , LoginResponseDto, ResetPasswordDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -20,13 +20,26 @@ export class LoginService {
 
   async create(data: CreateLoginDto) {
     const user = await this.loginModel.findOne({username:data?.username});
+    console.log(user);
+    console.log(data);
     if (!user) {
       throw new UnauthorizedException('Incorrect username');
     }
-    if (user.password != data.password) {
+    const pwd_bool = await bcrypt.compare(data.password, user.password);
+    if (!pwd_bool) {
       throw new UnauthorizedException('Incorrect username or password');
     }
     const token = await this.generateToken(data.username);
     return new LoginResponseDto({ ...data, token });
+  }
+
+  async updatePassword(username:string , resetPasswordDto:ResetPasswordDto){
+    //first find the username by id and then update it
+    const id = await this.loginModel.findOne({username:username},"_id");
+    const existingPatient = await this.loginModel.findByIdAndUpdate(id, resetPasswordDto, { new: true });
+    if (!existingPatient) {
+      throw new NotFoundException(`Student #${username} not found`);
+    }
+    return existingPatient;
   }
 }
