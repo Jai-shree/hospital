@@ -1,13 +1,16 @@
 import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 import {Expose} from "class-transformer";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateLoginDto {
     @IsString()
+    @ApiProperty()
     @IsEmail()
     @IsNotEmpty()
-    username: string;
+    email: string;
 
     @IsString()
+    @ApiProperty()
     @IsNotEmpty()
     password: string;
 }
@@ -17,7 +20,7 @@ export class LoginResponseDto{
     @IsEmail()
     @Expose()
     @IsNotEmpty()
-    username: string;
+    email: string;
 
     @IsString()
     @IsNotEmpty()
@@ -34,7 +37,20 @@ export class LoginResponseDto{
 }
 
 export class ResetPasswordDto{
+    @ApiProperty()
+    @IsString()
+    @IsNotEmpty()
+    email : string;
+
+    @ApiProperty()
     @IsString()
     @IsNotEmpty()
     password : string;
+}
+
+export class ForgetPasswordDto{
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty()
+    email: string;
 }

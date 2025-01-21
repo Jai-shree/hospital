@@ -4,7 +4,10 @@ import { LoginController } from './login.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LoginSchema } from 'src/schema/Login.schema';
 import { Login } from 'src/schema/Login.schema';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { EmailService } from './email.service';
+import { ConfigService } from '@nestjs/config';
+
 
 @Module({
   imports:[
@@ -12,9 +15,8 @@ import { JwtModule } from '@nestjs/jwt';
       name:'login',
       schema:LoginSchema
     }]),
-    JwtModule.register({ secret: 'hard!to-guess_secret' })
   ],
   controllers: [LoginController],
-  providers: [LoginService],
+  providers: [LoginService,EmailService,ConfigService],
 })
 export class LoginModule {}
