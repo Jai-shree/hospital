@@ -34,13 +34,17 @@ export class LoginService {
   async create(data: CreateLoginDto) {
     const email = await this.loginModel.findOne({email:data?.email});
     
-    if (!email) {
+    if (!email){
       throw new UnauthorizedException('Incorrect email');
     }
-    const pwd_bool = await bcrypt.compare(data.password, email.password);
-    if (!pwd_bool) {
+    if(data.password != email.password){
       throw new UnauthorizedException('Incorrect email or password');
     }
+    //console.log(bcrypt.hash(email));
+    //const pwd_bool = await bcrypt.compare(data.password, email.password);
+    //if (!pwd_bool) {
+    //  throw new UnauthorizedException('Incorrect email or password');
+    //}
     const token = await this.generateToken(data.email);
     return new LoginResponseDto({ ...data, token });
   }
