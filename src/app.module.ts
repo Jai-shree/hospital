@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ListModule } from './list/list.module';
 import { LoginModule } from './login/login.module';
 import { JwtModule } from '@nestjs/jwt';
-import { createProxyMiddleware } from 'http-proxy-middleware';
+import { createProxyMiddleware, RequestHandler, Options } from 'http-proxy-middleware';
 
 @Module({
   imports: [
@@ -33,7 +33,7 @@ export class AppModule implements NestModule {
       consumer
       .apply(
         createProxyMiddleware({
-          target: 'https://cloud-security-hospital-management.onrender.com/',
+          target: 'https://cloud-security-hospital-management.onrender.com',
           changeOrigin: true,
           pathRewrite: (path) => {
             return `/appointments`; // Rewrite the path dynamically
@@ -42,6 +42,24 @@ export class AppModule implements NestModule {
       )
       .forRoutes({ path: '/appointments', method: RequestMethod.GET });
 
+      consumer
+      .apply(createProxyMiddleware({
+          target: 'https://casenotes-backend.onrender.com',
+          changeOrigin: true,
+          secure: false,
+          pathRewrite: { '/api/patients': '/patients' },
+          on:{
+            proxyReq: (proxyReq, req: any, res) => {
+              if (req.method === "POST" && req.body) {
+                const bodyData = JSON.stringify(req.body);
+                proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
+                proxyReq.write(bodyData);
+                console.log(proxyReq);
+              }
+            },
+          }
+      }) as RequestHandler)
+      .forRoutes({ path: '/patients', method: RequestMethod.POST });
 
       consumer
       .apply(
