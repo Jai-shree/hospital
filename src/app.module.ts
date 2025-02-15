@@ -30,6 +30,18 @@ export class AppModule implements NestModule {
       )
       .forRoutes('/proxy1','/hello'); // Proxy requests to /proxy_path_one
       
+      consumer
+      .apply(
+        createProxyMiddleware({
+          target: 'https://cloud-security-hospital-management.onrender.com/',
+          changeOrigin: true,
+          pathRewrite: (path) => {
+            return `/appointments`; // Rewrite the path dynamically
+          },
+        })
+      )
+      .forRoutes({ path: '/appointments', method: RequestMethod.GET });
+
 
       consumer
       .apply(
@@ -46,19 +58,6 @@ export class AppModule implements NestModule {
         })
       )
       .forRoutes({ path: '/patients/*', method: RequestMethod.GET });
-
-      consumer
-      .apply(
-        createProxyMiddleware({
-          target: 'https://casenotes-backend.onrender.com',
-          changeOrigin: true,
-          pathRewrite: (path) => {
-            console.log(path);// Split the path
-            return `/patients`; // Rewrite the path dynamically
-          },
-        })
-      )
-      .forRoutes({ path: '/patients', method: RequestMethod.POST });
 
 
       consumer
