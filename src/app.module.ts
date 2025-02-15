@@ -1,4 +1,4 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -29,8 +29,39 @@ export class AppModule implements NestModule {
         })
       )
       .forRoutes('/proxy1','/hello'); // Proxy requests to /proxy_path_one
+      
 
-    consumer
+      consumer
+      .apply(
+        createProxyMiddleware({
+          target: 'https://casenotes-backend.onrender.com',
+          changeOrigin: true,
+          pathRewrite: (path) => {
+            const parts = path.split('/'); // Split the path
+            const uhid = parts.pop(); // Extract the last part as UHID
+            // console.log(`Original Path: ${path}`);
+            // console.log(`Extracted UHID: ${uhid}`);
+            return `/patients/${uhid}`; // Rewrite the path dynamically
+          },
+        })
+      )
+      .forRoutes({ path: '/patients/*', method: RequestMethod.GET });
+
+      consumer
+      .apply(
+        createProxyMiddleware({
+          target: 'https://casenotes-backend.onrender.com',
+          changeOrigin: true,
+          pathRewrite: (path) => {
+            console.log(path);// Split the path
+            return `/patients`; // Rewrite the path dynamically
+          },
+        })
+      )
+      .forRoutes({ path: '/patients', method: RequestMethod.POST });
+
+
+      consumer
       .apply(
         createProxyMiddleware({
           target: 'https://blogspot-g6zd.onrender.com', // Custom target for this path
