@@ -21,33 +21,190 @@ import { createProxyMiddleware, RequestHandler, Options } from 'http-proxy-middl
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(
-        createProxyMiddleware({
-          target: 'https://grindtechs.in', 
-          changeOrigin: true,
-        })
-      )
-      .forRoutes('/proxy1','/hello'); // Proxy requests to /proxy_path_one
-      
+    // Team 1
       consumer
       .apply(
         createProxyMiddleware({
-          target: 'https://cloud-security-hospital-management.onrender.com',
+          target: 'https://cs-hospitals-book-appointment.onrender.com',
           changeOrigin: true,
           pathRewrite: (path) => {
-            return `/appointments`; // Rewrite the path dynamically
+            return `/v1/doctors`; // Rewrite the path dynamically
           },
         })
       )
-      .forRoutes({ path: '/appointments', method: RequestMethod.GET });
+      .forRoutes({ path: '/doctors', method: RequestMethod.GET });
 
+      
       consumer
       .apply(createProxyMiddleware({
-          target: 'https://casenotes-backend.onrender.com',
+        target: 'https://cs-hospitals-book-appointment.onrender.com',
+        changeOrigin: true,
+        secure: false,
+        pathRewrite: { '/api/appointment': '/v1/appointment' },
+        on:{
+          proxyReq: (proxyReq, req: any, res) => {
+            if (req.method === "POST" && req.body) {
+                const bodyData = JSON.stringify(req.body);
+                proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
+                proxyReq.write(bodyData);
+                console.log(proxyReq);
+              }
+            },
+          }
+        }) as RequestHandler)
+        .forRoutes({ path: '/appointment', method: RequestMethod.POST });
+        
+        consumer
+        .apply(createProxyMiddleware({
+          target: 'https://cs-hospitals-book-appointment.onrender.com',
           changeOrigin: true,
           secure: false,
-          pathRewrite: { '/api/patients': '/patients' },
+          pathRewrite: { '/api/registerPatient': '/v1/registerPatient' },
+          on:{
+            proxyReq: (proxyReq, req: any, res) => {
+              if (req.method === "POST" && req.body) {
+                const bodyData = JSON.stringify(req.body);
+                proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
+                proxyReq.write(bodyData);
+                console.log(proxyReq);
+              }
+            },
+          }
+        }) as RequestHandler)
+        .forRoutes({ path: '/registerPatient', method: RequestMethod.POST });
+        
+        consumer
+        .apply(createProxyMiddleware({
+          target: 'https://cs-hospitals-book-appointment.onrender.com',
+          changeOrigin: true,
+          secure: false,
+          pathRewrite: { '/api/searchPatient': '/v1/searchPatient' },
+          on:{
+            proxyReq: (proxyReq, req: any, res) => {
+              if (req.method === "POST" && req.body) {
+                const bodyData = JSON.stringify(req.body);
+                proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
+                proxyReq.write(bodyData);
+                console.log(proxyReq);
+              }
+            },
+          }
+        }) as RequestHandler)
+        .forRoutes({ path: '/searchPatient', method: RequestMethod.POST });
+        
+
+        //Team 2
+        consumer
+        .apply(
+          createProxyMiddleware({
+            target: 'https://cloud-security-hospital-management.onrender.com',
+            changeOrigin: true,
+            pathRewrite: (path) => {
+              return `/appointments`; // Rewrite the path dynamically
+            },
+          })
+        )
+        .forRoutes({ path: '/appointments', method: RequestMethod.GET });
+
+        consumer
+        .apply(
+          createProxyMiddleware({
+            target: 'https://cloud-security-hospital-management.onrender.com',
+            changeOrigin: true,
+            pathRewrite: (path) => {
+              const parts = path.split('/'); // Split the path
+              const uhid = parts.pop();
+              return `/appointments/${uhid}`; // Rewrite the path dynamically
+            },
+          })
+        )
+        .forRoutes({ path: '/appointments/*', method: RequestMethod.GET });
+
+      // Team 4
+      consumer
+        .apply(
+          createProxyMiddleware({
+            target: 'https://cloudsecurity.onrender.com',
+            changeOrigin: true,
+            pathRewrite: (path) => {
+              // console.log(path);
+              return `/record`; // Rewrite the path dynamically
+            },
+          })
+        )
+        .forRoutes({ path: '/record', method: RequestMethod.GET });
+
+        consumer
+        .apply(
+          createProxyMiddleware({
+            target: 'https://cloudsecurity.onrender.com',
+            changeOrigin: true,
+            pathRewrite: (path) => {
+              const parts = path.split('/'); // Split the path
+              const uhid = parts.pop();
+              return `/record/${uhid}`; // Rewrite the path dynamically
+            },
+          })
+        )
+        .forRoutes({ path: '/record/*', method: RequestMethod.GET });
+      
+
+      // Team 5
+      consumer
+        .apply(
+          createProxyMiddleware({
+            target: 'https://billing-jgqf.onrender.com',
+            changeOrigin: true,
+            pathRewrite: (path) => {
+              const parts = path.split('/'); // Split the path
+              const uhid = parts.pop();
+              return `/api/generatebill/${uhid}`; // Rewrite the path dynamically
+            },
+          })
+        )
+        .forRoutes({ path: '/generatebill/*', method: RequestMethod.GET });
+      
+      consumer
+      .apply(createProxyMiddleware({
+        target: 'https://billing-jgqf.onrender.com',
+        changeOrigin: true,
+        secure: false,
+        pathRewrite: { '/api/createbill': '/api/createbill' },
+          on:{
+            proxyReq: (proxyReq, req: any, res) => {
+              if (req.method === "POST" && req.body) {
+                const bodyData = JSON.stringify(req.body);
+                proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
+                proxyReq.write(bodyData);
+                console.log(proxyReq);
+              }
+            },
+          }
+      }) as RequestHandler)
+      .forRoutes({ path: '/createbill', method: RequestMethod.POST });
+
+      consumer
+        .apply(
+          createProxyMiddleware({
+            target: 'https://billing-jgqf.onrender.com',
+            changeOrigin: true,
+            pathRewrite: (path) => {
+              const parts = path.split('/'); // Split the path
+              const uhid = parts.pop();
+              return `/api/deletebill/${uhid}`; // Rewrite the path dynamically
+            },
+          })
+        )
+        .forRoutes({ path: '/deletebill/*', method: RequestMethod.DELETE });
+
+
+      // Team 6
+      consumer
+      .apply(createProxyMiddleware({
+        target: 'https://casenotes-backend.onrender.com',
+        changeOrigin: true,
+        secure: false,
+        pathRewrite: { '/api/patients': '/patients' },
           on:{
             proxyReq: (proxyReq, req: any, res) => {
               if (req.method === "POST" && req.body) {
@@ -77,14 +234,104 @@ export class AppModule implements NestModule {
       )
       .forRoutes({ path: '/patients/*', method: RequestMethod.GET });
 
+      // Team 7
+      consumer
+        .apply(
+          createProxyMiddleware({
+            target: 'https://cs-hospitals-team7.onrender.com',
+            changeOrigin: true,
+            pathRewrite: (path) => {
+              return `/api/doctors`; // Rewrite the path dynamically
+            },
+          })
+        )
+        .forRoutes({ path: '/t7/doctors', method: RequestMethod.GET });
+
+        consumer
+        .apply(
+          createProxyMiddleware({
+            target: 'https://cs-hospitals-team7.onrender.com',
+            changeOrigin: true,
+            pathRewrite: (path) => {
+              return `/api/departments`; // Rewrite the path dynamically
+            },
+          })
+        )
+        .forRoutes({ path: '/departments', method: RequestMethod.GET });
+
+
+        consumer
+      .apply(createProxyMiddleware({
+        target: 'https://cs-hospitals-team7.onrender.com',
+        changeOrigin: true,
+        secure: false,
+          on:{
+            proxyReq: (proxyReq, req: any, res) => {
+              if (req.method === "POST" && req.body) {
+                const bodyData = JSON.stringify(req.body);
+                proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
+                proxyReq.write(bodyData);
+                console.log(proxyReq);
+              }
+            },
+          }
+      }) as RequestHandler)
+      .forRoutes({ path: '/addDoctors', method: RequestMethod.POST });
+
 
       consumer
-      .apply(
-        createProxyMiddleware({
-          target: 'https://blogspot-g6zd.onrender.com', // Custom target for this path
-          changeOrigin: true,
-        })
-      )
-      .forRoutes('/proxy2');
+      .apply(createProxyMiddleware({
+        target: 'https://cs-hospitals-team7.onrender.com',
+        changeOrigin: true,
+        secure: false,
+          on:{
+            proxyReq: (proxyReq, req: any, res) => {
+              if (req.method === "POST" && req.body) {
+                const bodyData = JSON.stringify(req.body);
+                proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
+                proxyReq.write(bodyData);
+                console.log(proxyReq);
+              }
+            },
+          }
+      }) as RequestHandler)
+      .forRoutes({ path: '/addDepartment', method: RequestMethod.POST });
+
+      // Team 8
+      consumer
+        .apply(
+          createProxyMiddleware({
+            target: 'https://backend-cs-051y.onrender.com',
+            changeOrigin: true,
+            pathRewrite: (path) => {
+              return `/api/reports/total-patients`; // Rewrite the path dynamically
+            },
+          })
+        )
+        .forRoutes({ path: '/reports/total-patients', method: RequestMethod.GET });
+
+        consumer
+        .apply(
+          createProxyMiddleware({
+            target: 'https://backend-cs-051y.onrender.com',
+            changeOrigin: true,
+            pathRewrite: (path) => {
+              return `/api/reports/total-patients`; // Rewrite the path dynamically
+            },
+          })
+        )
+        .forRoutes({ path: '/reports/total-patients', method: RequestMethod.GET });
+
+        consumer
+        .apply(
+          createProxyMiddleware({
+            target: 'https://backend-cs-051y.onrender.com',
+            changeOrigin: true,
+            pathRewrite: (path) => {
+              return `/api/reports/total-appointments`; // Rewrite the path dynamically
+            },
+          })
+        )
+        .forRoutes({ path: '/reports/total-appointments', method: RequestMethod.GET });
   }
 }
