@@ -175,6 +175,18 @@ export class AppModule implements NestModule {
           })
         )
         .forRoutes({ path: '/getbills', method: RequestMethod.GET });
+      
+        consumer
+        .apply(
+          createProxyMiddleware({
+            target: 'https://billing-jgqf.onrender.com',
+            changeOrigin: true,
+            pathRewrite: (path) => {
+              return `/api/search/patients`; // Rewrite the path dynamically
+            },
+          })
+        )
+        .forRoutes({ path: '/search/patients', method: RequestMethod.GET });
 
       consumer
       .apply(createProxyMiddleware({
@@ -229,6 +241,7 @@ export class AppModule implements NestModule {
       //     })
       //   )
       //   .forRoutes({ path: '/bills/*', method: RequestMethod.ALL });
+
       // Team 6
       consumer
       .apply(createProxyMiddleware({
