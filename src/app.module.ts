@@ -208,27 +208,27 @@ export class AppModule implements NestModule {
           })
         )
         .forRoutes({ path: '/deletebill/*', method: RequestMethod.DELETE });
-        consumer
-  .apply(
-    createProxyMiddleware({
-      target: 'https://billing-jgqf.onrender.com',
-      changeOrigin: true,
-      pathRewrite: (path) => {
-        // Replace /bills/ with /api/
-        return path.replace('/bills/', '/');
-      },
-      on:{
-        proxyReq: (proxyReq, req: any) => {
-        if (req.body) {
-          const bodyData = JSON.stringify(req.body);
-          proxyReq.setHeader('Content-Type', 'application/json');
-          proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
-          proxyReq.write(bodyData);
-        }
-      }}
-    })
-  )
-  .forRoutes({ path: '/bills/*', method: RequestMethod.ALL });
+      // consumer
+      //   .apply(
+      //     createProxyMiddleware({
+      //       target: 'https://billing-jgqf.onrender.com',
+      //       changeOrigin: true,
+      //       pathRewrite: (path) => {
+      //         // Replace /bills/ with /api/
+      //         return path.replace('/bills/', '/');
+      //       },
+      //       on:{
+      //         proxyReq: (proxyReq, req: any) => {
+      //         if (req.body) {
+      //           const bodyData = JSON.stringify(req.body);
+      //           proxyReq.setHeader('Content-Type', 'application/json');
+      //           proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+      //           proxyReq.write(bodyData);
+      //         }
+      //       }}
+      //     })
+      //   )
+      //   .forRoutes({ path: '/bills/*', method: RequestMethod.ALL });
       // Team 6
       consumer
       .apply(createProxyMiddleware({
