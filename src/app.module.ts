@@ -47,7 +47,7 @@ export class AppModule implements NestModule {
                 const bodyData = JSON.stringify(req.body);
                 proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
                 proxyReq.write(bodyData);
-                console.log(proxyReq);
+                // console.log(proxyReq);
               }
             },
           }
@@ -66,7 +66,7 @@ export class AppModule implements NestModule {
                 const bodyData = JSON.stringify(req.body);
                 proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
                 proxyReq.write(bodyData);
-                console.log(proxyReq);
+                // console.log(proxyReq);
               }
             },
           }
@@ -85,7 +85,7 @@ export class AppModule implements NestModule {
                 const bodyData = JSON.stringify(req.body);
                 proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
                 proxyReq.write(bodyData);
-                console.log(proxyReq);
+                // console.log(proxyReq);
               }
             },
           }
@@ -184,9 +184,18 @@ export class AppModule implements NestModule {
             pathRewrite: (path) => {
               return `/api/search/patients`; // Rewrite the path dynamically
             },
-          })
-        )
-        .forRoutes({ path: '/search/patients', method: RequestMethod.GET });
+            on:{
+              proxyReq: (proxyReq, req: any, res) => {
+                if (req.query) {
+                  const queryParams = new URLSearchParams(req.query).toString();
+                  const newPath = `/api/search/patients?${queryParams}`;
+                  // console.log(`Forwarding to: ${newPath}`);
+                  proxyReq.path = newPath; 
+                }
+              }
+          }
+        }) as RequestHandler)
+      .forRoutes({ path: '/search/patients', method: RequestMethod.GET });
 
       consumer
       .apply(createProxyMiddleware({
@@ -200,7 +209,7 @@ export class AppModule implements NestModule {
                 const bodyData = JSON.stringify(req.body);
                 proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
                 proxyReq.write(bodyData);
-                console.log(proxyReq);
+                // console.log(proxyReq);
               }
             },
           }
