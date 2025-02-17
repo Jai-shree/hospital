@@ -164,6 +164,18 @@ export class AppModule implements NestModule {
         )
         .forRoutes({ path: '/generatebill/*', method: RequestMethod.GET });
       
+        consumer
+        .apply(
+          createProxyMiddleware({
+            target: 'https://billing-jgqf.onrender.com',
+            changeOrigin: true,
+            pathRewrite: (path) => {
+              return `/api/getbills`; // Rewrite the path dynamically
+            },
+          })
+        )
+        .forRoutes({ path: '/getbills', method: RequestMethod.GET });
+
       consumer
       .apply(createProxyMiddleware({
         target: 'https://billing-jgqf.onrender.com',
