@@ -28,11 +28,11 @@ export class AppModule implements NestModule {
           target: 'https://cs-hospitals-book-appointment.onrender.com',
           changeOrigin: true,
           pathRewrite: (path) => {
-            return `/v1/doctors`; // Rewrite the path dynamically
+            return `/v1/departments`; // Rewrite the path dynamically
           },
         })
       )
-      .forRoutes({ path: '/doctors', method: RequestMethod.GET });
+      .forRoutes({ path: '/v1/departments', method: RequestMethod.GET });
 
       
       consumer
@@ -196,8 +196,27 @@ export class AppModule implements NestModule {
           })
         )
         .forRoutes({ path: '/deletebill/*', method: RequestMethod.DELETE });
-
-
+        consumer
+  .apply(
+    createProxyMiddleware({
+      target: 'https://billing-jgqf.onrender.com',
+      changeOrigin: true,
+      pathRewrite: (path) => {
+        // Replace /bills/ with /api/
+        return path.replace('/bills/', '/');
+      },
+      on:{
+        proxyReq: (proxyReq, req: any) => {
+        if (req.body) {
+          const bodyData = JSON.stringify(req.body);
+          proxyReq.setHeader('Content-Type', 'application/json');
+          proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+          proxyReq.write(bodyData);
+        }
+      }}
+    })
+  )
+  .forRoutes({ path: '/bills/*', method: RequestMethod.ALL });
       // Team 6
       consumer
       .apply(createProxyMiddleware({
