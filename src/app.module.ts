@@ -34,7 +34,28 @@ export class AppModule implements NestModule {
       )
       .forRoutes({ path: '/v1/departments', method: RequestMethod.GET });
 
-      
+      consumer
+      .apply(
+        createProxyMiddleware({
+          target: 'https://cs-hospitals-book-appointment.onrender.com',
+          changeOrigin: true,
+          pathRewrite: (path) => {
+            return `/v1/doctors`; // Rewrite the path dynamically
+          },
+          on:{
+            proxyReq: (proxyReq, req: any, res) => {
+              if (req.query) {
+                const queryParams = new URLSearchParams(req.query).toString();
+                const newPath = `/v1/doctors?${queryParams}`;
+                // console.log(`Forwarding to: ${newPath}`);
+                proxyReq.path = newPath; 
+              }
+            }
+          }
+        })
+      )
+      .forRoutes({ path: '/v1/doctors', method: RequestMethod.GET });
+
       consumer
       .apply(createProxyMiddleware({
         target: 'https://cs-hospitals-book-appointment.onrender.com',
@@ -352,39 +373,57 @@ export class AppModule implements NestModule {
 
       // Team 8
       consumer
-        .apply(
-          createProxyMiddleware({
-            target: 'https://backend-cs-051y.onrender.com',
-            changeOrigin: true,
-            pathRewrite: (path) => {
-              return `/api/reports/total-patients`; // Rewrite the path dynamically
-            },
-          })
-        )
-        .forRoutes({ path: '/reports/total-patients', method: RequestMethod.GET });
+      .apply(
+        createProxyMiddleware({
+          target: 'https://backend-cs-051y.onrender.com',
+          changeOrigin: true,
+          on:{
+            proxyReq: (proxyReq, req: any, res) => {
+              if (req.query) {
+                const queryParams = new URLSearchParams(req.query).toString();
+                const newPath = `/api/reports/total-revenue?${queryParams}`;
+                // console.log(`Forwarding to: ${newPath}`);
+                proxyReq.path = newPath; 
+              }
+            }
+        }
+      }) as RequestHandler)
+    .forRoutes({ path: '/reports/total-revenue', method: RequestMethod.GET });
+    
+    consumer
+      .apply(
+        createProxyMiddleware({
+          target: 'https://backend-cs-051y.onrender.com',
+          changeOrigin: true,
+          on:{
+            proxyReq: (proxyReq, req: any, res) => {
+              if (req.query) {
+                const queryParams = new URLSearchParams(req.query).toString();
+                const newPath = `/api/reports/total-appointments?${queryParams}`;
+                // console.log(`Forwarding to: ${newPath}`);
+                proxyReq.path = newPath; 
+              }
+            }
+        }
+      }) as RequestHandler)
+    .forRoutes({ path: '/reports/total-appointments', method: RequestMethod.GET });
 
-        consumer
-        .apply(
-          createProxyMiddleware({
-            target: 'https://backend-cs-051y.onrender.com',
-            changeOrigin: true,
-            pathRewrite: (path) => {
-              return `/api/reports/total-patients`; // Rewrite the path dynamically
-            },
-          })
-        )
-        .forRoutes({ path: '/reports/total-patients', method: RequestMethod.GET });
-
-        consumer
-        .apply(
-          createProxyMiddleware({
-            target: 'https://backend-cs-051y.onrender.com',
-            changeOrigin: true,
-            pathRewrite: (path) => {
-              return `/api/reports/total-appointments`; // Rewrite the path dynamically
-            },
-          })
-        )
-        .forRoutes({ path: '/reports/total-appointments', method: RequestMethod.GET });
+    consumer
+      .apply(
+        createProxyMiddleware({
+          target: 'https://backend-cs-051y.onrender.com',
+          changeOrigin: true,
+          on:{
+            proxyReq: (proxyReq, req: any, res) => {
+              if (req.query) {
+                const queryParams = new URLSearchParams(req.query).toString();
+                const newPath = `/api/reports/total-patients?${queryParams}`;
+                // console.log(`Forwarding to: ${newPath}`);
+                proxyReq.path = newPath; 
+              }
+            }
+        }
+      }) as RequestHandler)
+    .forRoutes({ path: '/reports/total-patients', method: RequestMethod.GET });
   }
 }
